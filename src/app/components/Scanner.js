@@ -3,18 +3,18 @@ import { useEffect, useState, useRef } from "react";
 import { BrowserMultiFormatReader, mScannerView } from '@zxing/browser';
 import { toast } from 'react-hot-toast';
 import Tesseract from "tesseract.js";
-import { useSpeech } from "react-text-to-speech";
-import { Speaker, Pause, Square } from 'lucide-react';
-import { useSpeechSynthesis } from 'react-speech-kit';
+// import { useSpeech } from "react-text-to-speech";
+// import { Speaker, Pause, Square } from 'lucide-react';
+// import { useSpeechSynthesis } from 'react-speech-kit';
 
 
 function Scanner({ setShowScanner }) {
     const [scanResult, setScanResult] = useState(null);
     const [isScanning, setIsScanning] = useState(false);
     const [fetchedData, setFetchedData] = useState(null);
-    const [isSpeaking, setIsSpeaking] = useState(false);
+    // const [isSpeaking, setIsSpeaking] = useState(false);
     const scannerRef = useRef(null);
-    const { speak, cancel } = useSpeechSynthesis();
+    // const { speak, cancel } = useSpeechSynthesis();
 
     const startCameraScanner = () => {
         return new Promise((resolve, reject) => {
@@ -187,42 +187,42 @@ function Scanner({ setShowScanner }) {
 
 
 
-    const {
-        Text,
-        speechStatus,
-        isInQueue,
-        start,
-        pause,
-        stop,
-    } = useSpeech({
-        text: fetchedData ?
-            `Name: ${fetchedData.name}. 
-                 Description: ${fetchedData.description}. 
-                 Dosage: ${fetchedData.dose}. 
-                 Price: ${fetchedData.price} rupees. 
-                 Expiry Date: ${fetchedData.expiry}`
-            : ''
-    });
-    const readFetchedData = () => {
-        if (isSpeaking) {
-            cancel();
-            setIsSpeaking(false);
-            return;
-        }
-        const textToSpeak = `
-          Name: ${fetchedData.name}
-          Description: ${fetchedData.description}
-          Dosage: ${fetchedData.dose}
-          Price: ₹ ${fetchedData.price}
-          Expiry Date: ${fetchedData.expiry}
-        `;
-        setIsSpeaking(true);
-        speak({ 
-            text: textToSpeak,
-            onEnd: () => setIsSpeaking(false)
-        });
-        speak({ text: textToSpeak });
-    };
+    // const {
+    //     Text,
+    //     speechStatus,
+    //     isInQueue,
+    //     start,
+    //     pause,
+    //     stop,
+    // } = useSpeech({
+    //     text: fetchedData ?
+    //         `Name: ${fetchedData.name}. 
+    //              Description: ${fetchedData.description}. 
+    //              Dosage: ${fetchedData.dose}. 
+    //              Price: ${fetchedData.price} rupees. 
+    //              Expiry Date: ${fetchedData.expiry}`
+    //         : ''
+    // });
+    // const readFetchedData = () => {
+    //     if (isSpeaking) {
+    //         cancel();
+    //         setIsSpeaking(false);
+    //         return;
+    //     }
+    //     const textToSpeak = `
+    //       Name: ${fetchedData.name}
+    //       Description: ${fetchedData.description}
+    //       Dosage: ${fetchedData.dose}
+    //       Price: ₹ ${fetchedData.price}
+    //       Expiry Date: ${fetchedData.expiry}
+    //     `;
+    //     setIsSpeaking(true);
+    //     speak({ 
+    //         text: textToSpeak,
+    //         onEnd: () => setIsSpeaking(false)
+    //     });
+    //     speak({ text: textToSpeak });
+    // };
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 ">
@@ -292,7 +292,7 @@ function Scanner({ setShowScanner }) {
                                         <p><strong>price:</strong> ₹ {fetchedData.price}</p>
                                         <p><strong>expiryDate:</strong> {fetchedData.expiry}</p>
                                     </div>
-                                     <div className="flex items-center gap-4 mt-4">
+                                    {/* <div className="flex items-center gap-4 mt-4">
                                   <button onClick={readFetchedData} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-100 hover:bg-blue-200 transition-colors">
                                     <Speaker size={24} className="text-blue-600" />
                                     <span className="text-blue-600">Speak</span>
@@ -304,7 +304,7 @@ function Scanner({ setShowScanner }) {
                                             <Square size={24} className="text-red-600" />
                                             <span className="text-red-600">Stop</span>
                                         </button>
-                                    </div> 
+                                    </div> */}
                                     {/* <button onClick={readFetchedData} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-100 hover:bg-blue-200 transition-colors">
                                     <Speaker size={24} className="text-blue-600" />
                                     <span className="text-blue-600">Speak</span>
