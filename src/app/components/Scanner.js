@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { BrowserMultiFormatReader, mScannerView } from '@zxing/browser';
 import { toast } from 'react-hot-toast';
 import Tesseract from "tesseract.js";
+import JsonToSpeech from "./JsonToSpeech";
 // import { useSpeech } from "react-text-to-speech";
 // import { Speaker, Pause, Square } from 'lucide-react';
 // import { useSpeechSynthesis } from 'react-speech-kit';
@@ -184,166 +185,135 @@ function Scanner({ setShowScanner }) {
         }
     };
 
+const data = {
+    text: fetchedData ? 
+        `Name: ${fetchedData.name}. 
+             Description: ${fetchedData.description}. 
+             Dosage: ${fetchedData.dose}. 
+             Price: ${fetchedData.price} rupees. 
+             Expiry Date: ${fetchedData.expiry}`
+        : ''
+}
 
 
+// const {
+//     Text,
+//     speechStatus,
+//     isInQueue,
+//     start,
+//     pause,
+//     stop,
+// } = useSpeech({
+//     text: fetchedData ?
+//         `Name: ${fetchedData.name}. 
+//              Description: ${fetchedData.description}. 
+//              Dosage: ${fetchedData.dose}. 
+//              Price: ${fetchedData.price} rupees. 
+//              Expiry Date: ${fetchedData.expiry}`
+//         : ''
+// });
+// const readFetchedData = () => {
+//     if (isSpeaking) {
+//         cancel();
+//         setIsSpeaking(false);
+//         return;
+//     }
+//     const textToSpeak = `
+//       Name: ${fetchedData.name}
+//       Description: ${fetchedData.description}
+//       Dosage: ${fetchedData.dose}
+//       Price: ₹ ${fetchedData.price}
+//       Expiry Date: ${fetchedData.expiry}
+//     `;
+//     setIsSpeaking(true);
+//     speak({ 
+//         text: textToSpeak,
+//         onEnd: () => setIsSpeaking(false)
+//     });
+//     speak({ text: textToSpeak });
+// };
 
-    // const {
-    //     Text,
-    //     speechStatus,
-    //     isInQueue,
-    //     start,
-    //     pause,
-    //     stop,
-    // } = useSpeech({
-    //     text: fetchedData ?
-    //         `Name: ${fetchedData.name}. 
-    //              Description: ${fetchedData.description}. 
-    //              Dosage: ${fetchedData.dose}. 
-    //              Price: ${fetchedData.price} rupees. 
-    //              Expiry Date: ${fetchedData.expiry}`
-    //         : ''
-    // });
-    // const readFetchedData = () => {
-    //     if (isSpeaking) {
-    //         cancel();
-    //         setIsSpeaking(false);
-    //         return;
-    //     }
-    //     const textToSpeak = `
-    //       Name: ${fetchedData.name}
-    //       Description: ${fetchedData.description}
-    //       Dosage: ${fetchedData.dose}
-    //       Price: ₹ ${fetchedData.price}
-    //       Expiry Date: ${fetchedData.expiry}
-    //     `;
-    //     setIsSpeaking(true);
-    //     speak({ 
-    //         text: textToSpeak,
-    //         onEnd: () => setIsSpeaking(false)
-    //     });
-    //     speak({ text: textToSpeak });
-    // };
+return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 ">
 
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 ">
-
-            <div className="flex justify-center items-center space-x-4 py-8">
-                {/* QR Code Scanner Block */}
-                {
-                    !fetchedData ? (
-                        <div className="scanner-container bg-white p-6 rounded-lg shadow-lg max-w-lg min-w-[400px w-full relative">
-                            <button
-                                className="absolute top-2 right-2 text-red-500"
-                                onClick={() => { setShowScanner(false); stopScanning(); cancel(); }}
-                            >
-                                ✖
-                            </button>
-                            <div className="text-center">
-                                {/* Camera Scanner Controls */}
-                                <div className="mt-4">
-                                    {isScanning ? (
-                                        <button
-                                            onClick={() => stopScanning()}
-                                            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                                        >
-                                            Stop Scanning
-                                        </button>
-                                    ) : (
-                                        <button
-                                            onClick={() => scanTextFromCamera()}
-                                            // onClick={startCameraScanner}
-                                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                                        >
-                                            Scan with Camera
-                                        </button>
-                                    )}
-                                </div>
-
-
-                                {/* Image Preview */}
-                                <img id="preview" className="mt-4 max-w-full h-48 object-contain hidden" alt="Preview" />
-
-                                {/* QR Code Reader Video */}
-                                <video id="reader" className={`mt-6 w-full ${isScanning ? "block " : "hidden"} `}></video>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="result-container bg-white p-6 rounded-lg shadow-lg min-w-[400px] w-full relative">
-
-                            <button
-                                className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-                                onClick={() => {
-                                    setShowScanner(false);
-                                    stopScanning()
-                                    window.location.reload();// Clear the scan result    
-                                }}
-
-                            >
-                                ✖
-                            </button>
-                            <h3 className="text-xl max-w-[500px] font-bold mb-2 text-gray-500">Scan Result:</h3>
-                            {fetchedData && (
-                                <div>
-                                    <div className="space-y-2">
-                                        <p><strong>name:</strong> {fetchedData.name}</p>
-                                        <p><strong>barcode:</strong> {fetchedData.barcode}</p>
-                                        <p><strong>description:</strong> {fetchedData.description}</p>
-                                        <p><strong>dosage:</strong> {fetchedData.dose}</p>
-                                        <p><strong>price:</strong> ₹ {fetchedData.price}</p>
-                                        <p><strong>expiryDate:</strong> {fetchedData.expiry}</p>
-                                    </div>
-                                    {/* <div className="flex items-center gap-4 mt-4">
-                                  <button onClick={readFetchedData} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-100 hover:bg-blue-200 transition-colors">
-                                    <Speaker size={24} className="text-blue-600" />
-                                    <span className="text-blue-600">Speak</span>
-                                    </button>
+        <div className="flex justify-center items-center space-x-4 py-8">
+            {/* QR Code Scanner Block */}
+            {
+                !fetchedData ? (
+                    <div className="scanner-container bg-white p-6 rounded-lg shadow-lg max-w-lg min-w-[400px w-full relative">
+                        <button
+                            className="absolute top-2 right-2 text-red-500"
+                            onClick={() => { setShowScanner(false); stopScanning(); cancel(); }}
+                        >
+                            ✖
+                        </button>
+                        <div className="text-center">
+                            {/* Camera Scanner Controls */}
+                            <div className="mt-4">
+                                {isScanning ? (
                                     <button
-                                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-100 hover:bg-red-200 transition-colors"
-                                            onClick={cancel}
-                                        >
-                                            <Square size={24} className="text-red-600" />
-                                            <span className="text-red-600">Stop</span>
-                                        </button>
-                                    </div> */}
-                                    {/* <button onClick={readFetchedData} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-100 hover:bg-blue-200 transition-colors">
-                                    <Speaker size={24} className="text-blue-600" />
-                                    <span className="text-blue-600">Speak</span>
-                                    </button> */}
-                                    {/* <div className="flex items-center gap-4 mt-4">
-                                        <button
-                                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-100 hover:bg-blue-200 transition-colors"
-                                            onClick={speechStatus !== "started" ? start : pause}
-                                        >
-                                            {speechStatus !== "started" ? (
-                                                <>
-                                                    <Speaker size={24} className="text-blue-600" />
-                                                    <span className="text-blue-600">Speak</span>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Pause size={24} className="text-blue-600" />
-                                                    <span className="text-blue-600">Pause</span>
-                                                </>
-                                            )}
-                                        </button>
+                                        onClick={() => stopScanning()}
+                                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                                    >
+                                        Stop Scanning
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={() => scanTextFromCamera()}
+                                        // onClick={startCameraScanner}
+                                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                    >
+                                        Scan with Camera
+                                    </button>
+                                )}
+                            </div>
 
-                                        <button
-                                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-100 hover:bg-red-200 transition-colors"
-                                            onClick={stop}
-                                        >
-                                            <Square size={24} className="text-red-600" />
-                                            <span className="text-red-600">Stop</span>
-                                        </button>
-                                    </div> */}
-                                </div>
-                            )}
+
+                            {/* Image Preview */}
+                            <img id="preview" className="mt-4 max-w-full h-48 object-contain hidden" alt="Preview" />
+
+                            {/* QR Code Reader Video */}
+                            <video id="reader" className={`mt-6 w-full ${isScanning ? "block " : "hidden"} `}></video>
                         </div>
-                    )
-                }
-            </div>
-        </div>
+                    </div>
+                ) : (
+                    <div className="result-container bg-white p-6 rounded-lg shadow-lg min-w-[400px] w-full relative">
 
-    );
+                        <button
+                            className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                            onClick={() => {
+                                setShowScanner(false);
+                                stopScanning()
+                                window.location.reload();// Clear the scan result    
+                            }}
+
+                        >
+                            ✖
+                        </button>
+                        <h3 className="text-xl max-w-[500px] font-bold mb-2 text-gray-500">Scan Result:</h3>
+                        {fetchedData && (
+                            <div>
+                                <div className="space-y-2">
+                                    <p><strong>name:</strong> {fetchedData.name}</p>
+                                    <p><strong>barcode:</strong> {fetchedData.barcode}</p>
+                                    <p><strong>description:</strong> {fetchedData.description}</p>
+                                    <p><strong>dosage:</strong> {fetchedData.dose}</p>
+                                    <p><strong>price:</strong> ₹ {fetchedData.price}</p>
+                                    <p><strong>expiryDate:</strong> {fetchedData.expiry}</p>
+                                </div>
+                                <div className="flex items-center gap-4 mt-4">
+                                    <JsonToSpeech  data={data}/>
+                                </div>
+
+                            </div>
+                        )}
+                    </div>
+                )
+            }
+        </div>
+    </div>
+
+);
 }
 
 export default Scanner;
